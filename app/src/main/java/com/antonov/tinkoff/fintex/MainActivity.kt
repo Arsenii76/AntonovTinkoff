@@ -16,14 +16,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.apply {
-            val titles = ArrayList<String>().apply {
-                add(getString(R.string.tabs_random))
-                add(getString(R.string.tabs_last))
-                add(getString(R.string.tabs_the_best))
-            }
+
             pager2.adapter = ViewPager2Adapter(this@MainActivity)
             TabLayoutMediator(tabs, pager2) { tab, position ->
-                tab.text = titles[position]
+                tab.text = when(position){
+                    0-> getString(R.string.tabs_random)
+                    1-> getString(R.string.tabs_last)
+                    2-> getString(R.string.tabs_the_best)
+                    else -> error("Unexpected position $position")
+                }
             }.attach()
         }
     }
