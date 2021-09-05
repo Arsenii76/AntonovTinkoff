@@ -1,12 +1,11 @@
 package com.antonov.tinkoff.fintex.data.api.categories
 
-import com.antonov.tinkoff.fintex.data.api.random.RandomGifApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object CategoriesGifRetrofitBuilder {
+object GifsRetrofitBuilder {
 
     private const val BASE_URL = "https://developerslife.ru/"
 
@@ -23,5 +22,5 @@ object CategoriesGifRetrofitBuilder {
             .build()
     }
 
-    val categoriesGifApiService = getRetrofit().create(CategoriesGifApiService::class.java)
+    val gifsApiService = getRetrofit().create(GifsApiService::class.java)
 }

@@ -1,4 +1,4 @@
-package com.antonov.tinkoff.fintex.data.repository.random
+package com.antonov.tinkoff.fintex.data.repository
 
 import com.antonov.tinkoff.fintex.data.api.random.RandomGifApiService
 

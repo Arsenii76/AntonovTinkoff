@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
-
-
+    
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -32,7 +31,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/mainTabs"
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
         app:tabTextColor="@color/black"
         app:tabIndicatorColor="@color/blue"
@@ -40,13 +39,11 @@
         android:background="@color/white"
         android:layout_height="wrap_content" />
 
-
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/mainPager2"
+        android:id="@+id/pager2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_anchor="@id/mainTabs"
+        app:layout_anchor="@id/tabs"
         app:layout_anchorGravity="bottom" />
-
 
 </LinearLayout>

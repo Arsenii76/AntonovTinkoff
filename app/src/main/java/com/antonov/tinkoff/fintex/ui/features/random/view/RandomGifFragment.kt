@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.antonov.tinkoff.fintex.R
 import com.antonov.tinkoff.fintex.data.api.random.RandomGifRetrofitBuilder
 import com.antonov.tinkoff.fintex.data.networkerror.RequestError
-import com.antonov.tinkoff.fintex.data.repository.random.RandomGifRepository
+import com.antonov.tinkoff.fintex.data.repository.RandomGifRepository
 import com.antonov.tinkoff.fintex.databinding.FragmentRandomBinding
 import com.antonov.tinkoff.fintex.ui.ViewState.*
 import com.antonov.tinkoff.fintex.ui.features.random.viewmodel.RandomGifViewModel
@@ -60,7 +60,7 @@ class RandomGifFragment : Fragment() {
             }
 
             repeatText.setOnClickListener {
-                randomGifViewModel.getRandomGif()
+                randomGifViewModel.load()
             }
         }
     }
@@ -91,7 +91,7 @@ class RandomGifFragment : Fragment() {
                     }
                 }
                 is Error -> {
-                    val errorMsg = RequestError.checkException(result.exception)
+                    val msg = RequestError.getErrorMessage(result.exception)
 
                     when (result.exception) {
                         is UnknownHostException -> {
@@ -107,9 +107,9 @@ class RandomGifFragment : Fragment() {
                                 imageGif.setImageResource(R.drawable.error_photo)
                                 progressBar.isVisible = false
                             }
-                            requireContext().toast(errorMsg)
+                            requireContext().toast(msg)
                         }
-                        else -> requireContext().toast(errorMsg)
+                        else -> requireContext().toast(msg)
 
                     }
                 }

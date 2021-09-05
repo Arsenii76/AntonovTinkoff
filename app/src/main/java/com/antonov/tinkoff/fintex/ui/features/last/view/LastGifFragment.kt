@@ -1,7 +1,6 @@
 package com.antonov.tinkoff.fintex.ui.features.last.view
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,19 +8,17 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.antonov.tinkoff.fintex.R
-import com.antonov.tinkoff.fintex.data.api.categories.CategoriesGifRetrofitBuilder
+import com.antonov.tinkoff.fintex.data.GifsCategoryNames
+import com.antonov.tinkoff.fintex.data.api.categories.GifsRetrofitBuilder
 import com.antonov.tinkoff.fintex.data.networkerror.RequestError
-import com.antonov.tinkoff.fintex.data.repository.categories.CategoriesGIfRepository
+import com.antonov.tinkoff.fintex.data.repository.GifsRepository
 import com.antonov.tinkoff.fintex.databinding.FragmentLastBinding
 import com.antonov.tinkoff.fintex.ui.ViewState.Success
 import com.antonov.tinkoff.fintex.ui.ViewState.Error
 import com.antonov.tinkoff.fintex.ui.ViewState.Loading
-import com.antonov.tinkoff.fintex.ui.common.CategoriesGifName
-import com.antonov.tinkoff.fintex.ui.common.adapter.CategoriesGIfAdapter
-import com.antonov.tinkoff.fintex.ui.common.viewmodel.CategoriesGifViewModel
-import com.antonov.tinkoff.fintex.ui.common.viewmodel.CategoriesGifViewModelFactory
+import com.antonov.tinkoff.fintex.ui.common.adapter.GIfsAdapter
+import com.antonov.tinkoff.fintex.ui.common.viewmodel.GifViewModel
+import com.antonov.tinkoff.fintex.ui.common.viewmodel.GifViewModelFactory
 import com.antonov.tinkoff.fintex.utils.toast
 import java.net.UnknownHostException
 
@@ -31,7 +28,7 @@ class LastGifFragment : Fragment() {
     private var _binding: FragmentLastBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var categoriesGifViewModel: CategoriesGifViewModel
+    private lateinit var gifViewModel: GifViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,39 +50,39 @@ class LastGifFragment : Fragment() {
         binding.apply {
 
             repeatNoInternetText.setOnClickListener {
-                getGifs()
+                load()
             }
 
             repeatEmptyResultText.setOnClickListener {
-                getGifs()
+                load()
             }
 
             newGifFab.setOnClickListener {
-                getGifs()
+                load()
             }
         }
     }
 
-    private fun getGifs(){
-        categoriesGifViewModel.getCategoriesGif(
-            categoriesName = CategoriesGifName.LAST,
+    private fun load(){
+        gifViewModel.load(
+            categoriesName = GifsCategoryNames.LAST,
             page = (0..2000).random()
         )
     }
 
     private fun setupViewModel() {
-        categoriesGifViewModel = ViewModelProvider(
+        gifViewModel = ViewModelProvider(
             this,
-            CategoriesGifViewModelFactory(
-                CategoriesGIfRepository(CategoriesGifRetrofitBuilder.categoriesGifApiService),
-                categoriesName = CategoriesGifName.LAST,
+            GifViewModelFactory(
+                GifsRepository(GifsRetrofitBuilder.gifsApiService),
+                categoriesName = GifsCategoryNames.LAST,
                 page = (0..2000).random()
             )
-        ).get(CategoriesGifViewModel::class.java)
+        ).get(GifViewModel::class.java)
     }
 
     private fun setupCategoriesObserver() {
-        categoriesGifViewModel.categoriesGifLiveData.observe(viewLifecycleOwner, { results ->
+        gifViewModel.categoriesGifLiveData.observe(viewLifecycleOwner, { results ->
             when (results) {
                 is Success -> {
                     binding.progressBar.isVisible = false
@@ -99,7 +96,7 @@ class LastGifFragment : Fragment() {
                     } else {
                         binding.categoriesRecycler.apply {
                             layoutManager = LinearLayoutManager(requireContext())
-                            adapter = results.data?.result?.let { CategoriesGIfAdapter(it) }
+                            adapter = results.data?.result?.let { GIfsAdapter(it) }
                             binding.newGifFab.isVisible = true
                         }
                     }
@@ -117,7 +114,7 @@ class LastGifFragment : Fragment() {
                     binding.newGifFab.isVisible = false
                     binding.progressBar.isVisible = false
 
-                    val errorMsg = RequestError.checkException(results.exception)
+                    val msg = RequestError.getErrorMessage(results.exception)
 
                     when (results.exception) {
                         is UnknownHostException -> {
@@ -127,7 +124,7 @@ class LastGifFragment : Fragment() {
                                 errorWithEmptyResultLinear.isVisible = false
                             }
                         }
-                        else -> requireContext().toast(errorMsg)
+                        else -> requireContext().toast(msg)
                     }
                 }
             }

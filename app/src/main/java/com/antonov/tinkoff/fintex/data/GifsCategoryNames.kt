@@ -1,6 +1,6 @@
-package com.antonov.tinkoff.fintex.ui.common
+package com.antonov.tinkoff.fintex.data
 
-object CategoriesGifName {
+object GifsCategoryNames {
     const val TOP = "top"
     const val LAST = "latest"
     const val HOT = "hot"

@@ -2,7 +2,7 @@ package com.antonov.tinkoff.fintex.ui.features.random.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.antonov.tinkoff.fintex.data.repository.random.RandomGifRepository
+import com.antonov.tinkoff.fintex.data.repository.RandomGifRepository
 
 class RandomGifViewModelFactory(
     private val randomGifRepository: RandomGifRepository,

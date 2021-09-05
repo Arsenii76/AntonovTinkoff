@@ -1,8 +1,8 @@
-package com.antonov.tinkoff.fintex.data.model.categories
+package com.antonov.tinkoff.fintex.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class CategoriesGifResult(
+data class GifsResult(
     val description: String,
     @SerializedName("gifURL") val url: String
 )

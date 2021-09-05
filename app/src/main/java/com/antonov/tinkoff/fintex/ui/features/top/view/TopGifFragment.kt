@@ -8,16 +8,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.antonov.tinkoff.fintex.data.api.categories.CategoriesGifRetrofitBuilder
+import com.antonov.tinkoff.fintex.data.GifsCategoryNames
+import com.antonov.tinkoff.fintex.data.api.categories.GifsRetrofitBuilder
 import com.antonov.tinkoff.fintex.data.networkerror.RequestError
-import com.antonov.tinkoff.fintex.data.repository.categories.CategoriesGIfRepository
+import com.antonov.tinkoff.fintex.data.repository.GifsRepository
 import com.antonov.tinkoff.fintex.databinding.FragmentTopGifBinding
 import com.antonov.tinkoff.fintex.ui.ViewState
-import com.antonov.tinkoff.fintex.ui.common.CategoriesGifName
-import com.antonov.tinkoff.fintex.ui.common.adapter.CategoriesGIfAdapter
-import com.antonov.tinkoff.fintex.ui.common.viewmodel.CategoriesGifViewModel
-import com.antonov.tinkoff.fintex.ui.common.viewmodel.CategoriesGifViewModelFactory
+import com.antonov.tinkoff.fintex.ui.common.adapter.GIfsAdapter
+import com.antonov.tinkoff.fintex.ui.common.viewmodel.GifViewModel
+import com.antonov.tinkoff.fintex.ui.common.viewmodel.GifViewModelFactory
 import com.antonov.tinkoff.fintex.utils.toast
 import java.net.UnknownHostException
 
@@ -27,7 +26,7 @@ class TopGifFragment : Fragment() {
     private var _binding: FragmentTopGifBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var categoriesGifViewModel: CategoriesGifViewModel
+    private lateinit var gifViewModel: GifViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,39 +49,39 @@ class TopGifFragment : Fragment() {
         binding.apply {
 
             repeatNoInternetText.setOnClickListener {
-                getGifs()
+                load()
             }
 
             repeatEmptyResultText.setOnClickListener {
-                getGifs()
+                load()
             }
 
             newGifFab.setOnClickListener {
-                getGifs()
+                load()
             }
         }
     }
 
-    private fun getGifs(){
-        categoriesGifViewModel.getCategoriesGif(
-            categoriesName = CategoriesGifName.TOP,
+    private fun load(){
+        gifViewModel.load(
+            categoriesName = GifsCategoryNames.TOP,
             page = (0..2000).random()
         )
     }
 
     private fun setupViewModel() {
-        categoriesGifViewModel = ViewModelProvider(
+        gifViewModel = ViewModelProvider(
             this,
-            CategoriesGifViewModelFactory(
-                CategoriesGIfRepository(CategoriesGifRetrofitBuilder.categoriesGifApiService),
-                categoriesName = CategoriesGifName.TOP,
+            GifViewModelFactory(
+                GifsRepository(GifsRetrofitBuilder.gifsApiService),
+                categoriesName = GifsCategoryNames.TOP,
                 page = (0..2000).random()
             )
-        ).get(CategoriesGifViewModel::class.java)
+        ).get(GifViewModel::class.java)
     }
 
     private fun setupCategoriesObserver() {
-        categoriesGifViewModel.categoriesGifLiveData.observe(viewLifecycleOwner, { results ->
+        gifViewModel.categoriesGifLiveData.observe(viewLifecycleOwner, { results ->
             when (results) {
                 is ViewState.Success -> {
                     binding.progressBar.isVisible = false
@@ -96,7 +95,7 @@ class TopGifFragment : Fragment() {
                     } else {
                         binding.categoriesRecycler.apply {
                             layoutManager = LinearLayoutManager(requireContext())
-                            adapter = results.data?.result?.let { CategoriesGIfAdapter(it) }
+                            adapter = results.data?.result?.let { GIfsAdapter(it) }
                             binding.newGifFab.isVisible = true
                         }
                     }
@@ -114,7 +113,7 @@ class TopGifFragment : Fragment() {
                     binding.newGifFab.isVisible = false
                     binding.progressBar.isVisible = false
 
-                    val errorMsg = RequestError.checkException(results.exception)
+                    val msg = RequestError.getErrorMessage(results.exception)
 
                     when (results.exception) {
                         is UnknownHostException -> {
@@ -124,7 +123,7 @@ class TopGifFragment : Fragment() {
                                 errorWithEmptyResultLinear.isVisible = false
                             }
                         }
-                        else -> requireContext().toast(errorMsg)
+                        else -> requireContext().toast(msg)
                     }
                 }
             }

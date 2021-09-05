@@ -6,7 +6,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 object RequestError {
-    fun checkException(e: Exception): String {
+    fun getErrorMessage(e: Exception): String {
         return when(e){
             is UnknownHostException -> StatusError.NO_CONNECTION
             is HttpException -> StatusError.SERVER_ERROR
